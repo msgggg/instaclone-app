@@ -1,45 +1,43 @@
-import AppLoading from 'expo-app-loading';
-import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
-import { StyleSheet, Text, View } from 'react-native';
+import * as SplashScreen from "expo-splash-screen";
+import { Asset } from "expo-asset";
+import LoggedOutNav from "./navigators/LoggedOutNav";
+import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
-  const onFinish = () => setLoading(false);
-  const preload = () => {
-    const fontsToLoad = [Ionicons.font];
-    const fontPromises = fontsToLoad.map((font) => Font.loadAsync(font));
-    const imagesToLoad = [
-      require("./assets/logo.png"),
-      "https://raw.githubusercontent.com/nomadcoders/instaclone-native/93a5b77e98eefdf5084bfae44653ba67e4ca312c/assets/logo.png",
-    ];
-    const imagePromises = imagesToLoad.map((image) => Asset.loadAsync(image));
-    return Promise.all([...fontPromises, ...imagePromises]);
-  };
-  if (loading) {
-    return (
-      <AppLoading
-        startAsync={preload}
-        onError={console.warn}
-        onFinish={onFinish}
-      />
-    );
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await Font.loadAsync(Ionicons.font);
+        await Asset.loadAsync([require("./assets/logo.png")]);
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setLoading(true);
+      }
+    }
+    prepare();
+  }, []);
+  const onLayoutRootView = useCallback(async () => {
+    if (loading) {
+      await SplashScreen.hideAsync();
+    }
+  }, [loading]);
+
+  if (!loading) {
+    return null;
   }
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer onReady={onLayoutRootView}>
+      <LoggedOutNav />
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+//https://docs.expo.dev/versions/latest/sdk/splash-screen/#splashscreenpreventautohideasync
+//https://github.com/j3y3h0/nomadcoffee-app/commit/ed0c3818d3710ba59a3f42b847b3c8b28b45d8e2#diff-9b5b5955d0e684e7904f3fc143e07aaa11b7e7c3b36d10985c4aff2554940cbf
