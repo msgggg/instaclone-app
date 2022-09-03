@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { gql, useMutation } from "@apollo/client";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -54,6 +55,7 @@ export default function CreateAccount({ navigation }) {
   const onNext = (nextOne) => {
     nextOne?.current?.focus();
   };
+
   const onValid = (data) => {
     if (!loading) {
       createAccountMutation({

@@ -6,34 +6,41 @@ import { Asset } from "expo-asset";
 import LoggedOutNav from "./navigators/LoggedOutNav";
 import { NavigationContainer } from "@react-navigation/native";
 import { ApolloProvider, useReactiveVar } from "@apollo/client";
-import client, { isLoggedInVar } from "./apollo";
+import client, { isLoggedInVar, tokenVar } from "./apollo";
 import LoggedInNav from "./navigators/LoggedInNav";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
 
   useEffect(() => {
     async function prepare() {
       try {
+        const token = await AsyncStorage.getItem("token");
+        if (token) {
+          isLoggedInVar(true);
+          tokenVar(token);
+        }
         await SplashScreen.preventAutoHideAsync();
         await Font.loadAsync(Ionicons.font);
         await Asset.loadAsync([require("./assets/logo.png")]);
       } catch (e) {
         console.warn(e);
       } finally {
-        setLoading(true);
+        setLoading(false);
       }
     }
     prepare();
   }, []);
+
   const onLayoutRootView = useCallback(async () => {
-    if (loading) {
+    if (!loading) {
       await SplashScreen.hideAsync();
     }
   }, [loading]);
 
-  if (!loading) {
+  if (loading) {
     return null;
   }
   return (
