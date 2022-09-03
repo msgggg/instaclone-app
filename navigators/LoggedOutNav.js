@@ -1,5 +1,4 @@
 import React from "react";
-import { Settings } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Welcome from "../screens/Welcome";
 import LogIn from "../screens/LogIn";
@@ -12,12 +11,10 @@ export default function LoggedOutNav() {
         <Stack.Navigator
             initialRouteName="Welcome"
             screenOptions={{
-                presentation: "card",
                 headerBackTitleVisible: false,
-                headerTitleAlign: "center",
-                animation: "slide_from_right",
-                headerShown: false,
-                headerTintColor: "purple",
+                headerTintColor: "white",
+                headerTitle: false,
+                headerTransparent: true,
             }}
         >
             <Stack.Screen
@@ -28,19 +25,7 @@ export default function LoggedOutNav() {
                 component={Welcome}
             />
             <Stack.Screen name="LogIn" component={LogIn} />
-            <Stack.Screen
-                name="CreateAccount"
-                component={CreateAccount}
-                options={{
-                    headerShown: true,
-                    headerTitle: "",
-                    headerTransparent: true,
-                    headerTintColor: "white",
-                    headerStyle: { backgroundColor: "black" },
-                }}
-            />
+            <Stack.Screen name="CreateAccount" component={CreateAccount} />
         </Stack.Navigator>
     );
 }
-
-// import { createNativeStackNavigator } from "@react-navigation/native-stack";
