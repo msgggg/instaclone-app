@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native"
 import React from "react";
+import { colors } from "../colors";
 import styled from "styled-components/native";
 import { UserAvatar, UserInfoBox, Username } from "./sharedStyles";
 
@@ -28,23 +29,20 @@ const Wrapper = styled.View`
   align-items: center;
   padding: 10px 10px;
 `;
-
 const FollowBtn = styled.TouchableOpacity`
-	border: none;
-	background-color: #0095f6;
-	border-radius: 3px;
-	padding: 5px 16px;
-	justify-content: center;
 	align-items: center;
+  background-color: ${colors.blue};
+  justify-content: center;
+  padding: 5px 10px;
+  border-radius: 4px;
 `;
-
 const FollowText = styled.Text`
 	color: white;
 	text-align: center;
 	font-weight: 600;
 `;
 
-export default function UserRow({ username, avatar, isFollowing, isMe }) {
+export default function UserRow({ avatar, id, username, isFollowing, isMe }) {
   const navigation = useNavigation();
   const followOnCompleted = (data) => {
     const {
@@ -67,7 +65,6 @@ export default function UserRow({ username, avatar, isFollowing, isMe }) {
   };
 
   const toggleUpdate = (cache, result) => {
-    console.log(result);
     const userId = `User:${id}`;
     cache.modify({
       id: userId,
@@ -100,13 +97,20 @@ export default function UserRow({ username, avatar, isFollowing, isMe }) {
   };
   return (
     <Wrapper>
-      <UserInfoBox onPress={() => navigation.navigate("Profile")}>
+      <UserInfoBox
+        onPress={() =>
+          navigation.navigate("Profile", {
+            username,
+            id,
+          })
+        }
+      >
         <UserAvatar
           resizeMode="cover"
           source={{ uri: avatar }} />
         <Username>{username}</Username>
       </UserInfoBox>
-      {isMe ? null : (
+      {isMe ? (
         <FollowBtn
           onPress={
             isFollowing ? () => unfollowOnValid() : () => followOnValid()
@@ -114,7 +118,7 @@ export default function UserRow({ username, avatar, isFollowing, isMe }) {
         >
           <FollowText>{isFollowing ? "Unfollow" : "Follow"}</FollowText>
         </FollowBtn>
-      )}
+      ) : null}
     </Wrapper>
   );
 };

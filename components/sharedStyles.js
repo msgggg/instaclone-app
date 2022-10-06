@@ -14,5 +14,4 @@ export const Username = styled.Text`
 export const UserInfoBox = styled.TouchableOpacity`
 	flex-direction: row;
 	align-items: center;
-	padding: 10px;
 `;

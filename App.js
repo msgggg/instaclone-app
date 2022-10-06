@@ -9,7 +9,7 @@ import { ApolloProvider, useReactiveVar } from "@apollo/client";
 import client, { isLoggedInVar, tokenVar, cache } from "./apollo";
 import LoggedInNav from "./navigators/LoggedInNav";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AsyncStorageWrapper, persistCache } from "apollo3-cache-persist";
+import { AsyncStorageWrapper, CachePersistor, persistCache } from "apollo3-cache-persist";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -23,10 +23,11 @@ export default function App() {
           isLoggedInVar(true);
           tokenVar(token);
         }
-        await persistCache({
+        const persistor = new CachePersistor({
           cache,
           storage: new AsyncStorageWrapper(AsyncStorage),
-        });
+          });
+          await persistor.restore();
         await SplashScreen.preventAutoHideAsync();
         await Font.loadAsync(Ionicons.font);
         await Asset.loadAsync([require("./assets/logo.png")]);
